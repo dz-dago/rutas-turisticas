@@ -1,0 +1,1 @@
+export const PRECIO_SUSCRIPCION = 180;
