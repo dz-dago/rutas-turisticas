@@ -19,7 +19,7 @@ function Registro() {
     telefono: "",
     nacionalidad: "Guatemala",
 
-    perfilTipo: "NAC",
+    perfilTipo: "TUR",
 
     avatar: "",
 
@@ -366,16 +366,24 @@ function Registro() {
                 "
               >
 
-                <option value="LOC">
-                  Local
+                <option value="TUR">
+                  Turista general
                 </option>
 
-                <option value="NAC">
-                  Turista nacional
+                <option value="FAM">
+                  Familia
                 </option>
 
-                <option value="INT">
-                  Turista internacional
+                <option value="PAR">
+                  Pareja
+                </option>
+
+                <option value="SOL">
+                  Solo
+                </option>
+
+                <option value="GRP">
+                  Grupo
                 </option>
 
               </select>

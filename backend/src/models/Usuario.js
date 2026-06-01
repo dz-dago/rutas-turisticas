@@ -35,9 +35,9 @@ const UsuarioSchema = new mongoose.Schema({
 
   perfilTipo: {
     type: String,
-    enum: ["LOC", "NAC", "INT"],
+    enum: ["TUR", "FAM", "PAR", "SOL", "GRP"],
     required: false,
-    default: "NAC"
+    default: "TUR"
   },
 
   nacionalidad: {

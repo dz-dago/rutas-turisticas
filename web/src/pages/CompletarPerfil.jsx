@@ -15,7 +15,7 @@ function CompletarPerfil() {
     rol: "turista",
     telefono: "",
     nacionalidad: "Guatemala",
-    perfilTipo: "NAC",
+    perfilTipo: "TUR",
 
     avatar: "",
     documentoIdentidad: "",
@@ -177,9 +177,25 @@ function CompletarPerfil() {
               onChange={handleChange}
               className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4"
             >
-              <option value="LOC">Local</option>
-              <option value="NAC">Turista nacional</option>
-              <option value="INT">Turista internacional</option>
+              <option value="TUR">
+                Turista general
+              </option>
+
+              <option value="FAM">
+                Familia
+              </option>
+
+              <option value="PAR">
+                Pareja
+              </option>
+
+              <option value="SOL">
+                Solo
+              </option>
+
+              <option value="GRP">
+                Grupo
+              </option>
             </select>
           )}
 
