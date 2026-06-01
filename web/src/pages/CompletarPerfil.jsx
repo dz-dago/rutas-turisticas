@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 
 import api from "../api/api";
 import { useAuth } from "../context/AuthContext";
+import BotonRegresar from "../components/BotonRegresar";
 
 function CompletarPerfil() {
   const navigate = useNavigate();
@@ -102,13 +103,7 @@ function CompletarPerfil() {
     <div className="min-h-screen bg-zinc-950 text-white flex items-center justify-center px-6 py-12">
       <div className="w-full max-w-xl bg-zinc-900 border border-zinc-800 rounded-[2rem] p-8">
 
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          className="mb-6 px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700"
-        >
-          ← Regresar
-        </button>
+        <BotonRegresar />
 
         <h1 className="text-4xl font-black">
           Completar perfil

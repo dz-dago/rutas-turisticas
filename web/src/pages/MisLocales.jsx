@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 
 import api from "../api/api";
 import DashboardLayout from "../components/DashboardLayout";
+import BotonRegresar from "../components/BotonRegresar";
 
 const categoriasMap = {
   CAF: "Cafeterías y postres",
@@ -59,6 +60,8 @@ function MisLocales() {
         md:px-8
         py-10
       ">
+
+        <BotonRegresar />
 
         <h1 className="
           text-4xl

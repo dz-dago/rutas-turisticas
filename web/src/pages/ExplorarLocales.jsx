@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../api/api";
 import toast from "react-hot-toast";
+import BotonRegresar from "../components/BotonRegresar";
 
 function ExplorarLocales() {
   const [locales, setLocales] = useState([]);
@@ -182,6 +183,7 @@ function ExplorarLocales() {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white px-8 py-10">
+      <BotonRegresar />
       <h1 className="text-4xl font-black text-orange-400">
         Explorar Locales
       </h1>
