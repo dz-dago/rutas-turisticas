@@ -35,9 +35,9 @@ const UsuarioSchema = new mongoose.Schema({
 
   perfilTipo: {
     type: String,
-    enum: ["FAM", "PAR", "SOL", "GRP", "LOC", "TUR"],
+    enum: ["LOC", "NAC", "INT"],
     required: false,
-    default: null
+    default: "NAC"
   },
 
   nacionalidad: {
@@ -64,6 +64,41 @@ const UsuarioSchema = new mongoose.Schema({
   fotoPerfil: {
     type: String,
     default: ""
+  },
+
+  documentoIdentidad: {
+    type: String,
+    default: ""
+  },
+
+  credencialIdentificacion: {
+    type: String,
+    default: ""
+  },
+
+  idiomas: {
+    type: [String],
+    default: []
+  },
+
+  experiencia: {
+    type: String,
+    default: ""
+  },
+
+  descripcion: {
+    type: String,
+    default: ""
+  },
+
+  rutasOfrecidas: {
+    type: [String],
+    default: []
+  },
+
+  precioPromedio: {
+    type: Number,
+    default: 0
   },
 
   perfilCompleto: {

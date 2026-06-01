@@ -19,7 +19,7 @@ function Registro() {
     telefono: "",
     nacionalidad: "Guatemala",
 
-    perfilTipo: "TUR",
+    perfilTipo: "NAC",
 
     avatar: "",
 
@@ -170,6 +170,14 @@ function Registro() {
         rounded-[2rem]
         p-8
       ">
+
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          className="mb-6 px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700"
+        >
+          ← Regresar
+        </button>
 
         <h1 className="
           text-4xl
@@ -358,20 +366,16 @@ function Registro() {
                 "
               >
 
-                <option value="TUR">
-                  Turista general
+                <option value="LOC">
+                  Local
                 </option>
 
-                <option value="FAM">
-                  Familia
+                <option value="NAC">
+                  Turista nacional
                 </option>
 
-                <option value="PAR">
-                  Pareja
-                </option>
-
-                <option value="SOL">
-                  Solo
+                <option value="INT">
+                  Turista internacional
                 </option>
 
               </select>
@@ -531,7 +535,7 @@ function Registro() {
 
                 <div>
                   <label className="block mb-2 text-zinc-300">
-                    Foto de perfil
+                    Documento de identificación
                   </label>
 
                   <input
@@ -542,7 +546,7 @@ function Registro() {
 
                       if (!archivo) return;
 
-                      const loadingToast = toast.loading("Subiendo foto...");
+                      const loadingToast = toast.loading("Subiendo documento...");
 
                       const url = await subirImagen(archivo);
 
@@ -551,19 +555,19 @@ function Registro() {
                       if (url) {
                         setForm({
                           ...form,
-                          fotoPerfil: url
+                          documentoIdentidad: url
                         });
 
-                        toast.success("Foto subida");
+                        toast.success("Documento subido");
                       }
                     }}
                     className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4"
                   />
 
-                  {form.fotoPerfil && (
+                  {form.documentoIdentidad && (
                     <img
-                      src={form.fotoPerfil}
-                      alt="perfil"
+                      src={form.documentoIdentidad}
+                      alt="documento"
                       className="w-24 h-24 rounded-full object-cover mt-4"
                     />
                   )}

@@ -7,19 +7,43 @@ function CompletarPerfil() {
   const navigate = useNavigate();
   const { setUsuario } = useAuth();
 
-  const [rol, setRol] = useState("turista");
-  const [telefono, setTelefono] = useState("");
-  const [nacionalidad, setNacionalidad] = useState("Guatemala");
-  const [perfilTipo, setPerfilTipo] = useState("TUR");
+  const [form, setForm] = useState({
+    rol: "turista",
+    telefono: "",
+    nacionalidad: "Guatemala",
+    perfilTipo: "NAC",
+
+    fotoPerfil: "",
+    credencialIdentificacion: "",
+
+    idiomas: "",
+    descripcion: "",
+    experiencia: "",
+    rutasOfrecidas: "",
+    precioPromedio: ""
+  });
+
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value
+    });
+  };
 
   const completarPerfil = async (e) => {
     e.preventDefault();
 
     const res = await api.post("/auth/completar-perfil", {
-      rol,
-      telefono,
-      nacionalidad,
-      perfilTipo
+      ...form,
+      idiomas: form.idiomas
+        ? form.idiomas.split(",").map(i => i.trim())
+        : [],
+
+      rutasOfrecidas: form.rutasOfrecidas
+        ? form.rutasOfrecidas.split(",").map(r => r.trim())
+        : [],
+
+      precioPromedio: Number(form.precioPromedio) || 0
     });
 
     setUsuario(res.data.usuario);
@@ -32,7 +56,7 @@ function CompletarPerfil() {
 
       <form onSubmit={completarPerfil}>
         <label>Tipo de usuario</label>
-        <select value={rol} onChange={(e) => setRol(e.target.value)}>
+        <select name="rol" value={form.rol} onChange={handleChange}>
           <option value="turista">Turista</option>
           <option value="guia">Guía turístico</option>
           <option value="local">Local / Negocio</option>
@@ -43,8 +67,9 @@ function CompletarPerfil() {
         <label>Teléfono</label>
         <input
           type="text"
-          value={telefono}
-          onChange={(e) => setTelefono(e.target.value)}
+          name="telefono"
+          value={form.telefono}
+          onChange={handleChange}
           required
         />
 
@@ -53,20 +78,24 @@ function CompletarPerfil() {
         <label>Nacionalidad</label>
         <input
           type="text"
-          value={nacionalidad}
-          onChange={(e) => setNacionalidad(e.target.value)}
+          name="nacionalidad"
+          value={form.nacionalidad}
+          onChange={handleChange}
         />
 
         <br />
 
         <label>Tipo de perfil</label>
-        <select value={perfilTipo} onChange={(e) => setPerfilTipo(e.target.value)}>
-          <option value="FAM">Familia</option>
-          <option value="PAR">Pareja</option>
-          <option value="SOL">Solo</option>
-          <option value="GRP">Grupo</option>
+        <select
+          name="perfilTipo"
+          value={form.perfilTipo}
+          onChange={handleChange}
+          className="w-full p-3 rounded-xl bg-zinc-800 border border-zinc-700"
+        >
+          <option value="">Seleccione una opción</option>
           <option value="LOC">Local</option>
-          <option value="TUR">Turista / Internacional</option>
+          <option value="NAC">Turista nacional</option>
+          <option value="INT">Turista internacional</option>
         </select>
 
         <br />

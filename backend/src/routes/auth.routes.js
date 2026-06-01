@@ -42,12 +42,53 @@ router.get("/perfil", protegerRuta, (req, res) => {
 
 router.post("/completar-perfil", protegerRuta, async (req, res) => {
   try {
-    const { rol, telefono, nacionalidad, perfilTipo } = req.body;
+    const {
+      rol,
+      telefono,
+      nacionalidad,
+      perfilTipo,
+      fotoPerfil,
+      documentoIdentidad,
+      credencialIdentificacion,
+      idiomas,
+      descripcion,
+      experiencia,
+      rutasOfrecidas,
+      precioPromedio
+    } = req.body;
 
     req.usuario.rol = rol || req.usuario.rol;
     req.usuario.telefono = telefono || req.usuario.telefono;
     req.usuario.nacionalidad = nacionalidad || req.usuario.nacionalidad;
     req.usuario.perfilTipo = perfilTipo || req.usuario.perfilTipo;
+
+    req.usuario.fotoPerfil =
+      fotoPerfil || req.usuario.fotoPerfil;
+
+    req.usuario.avatar =
+      fotoPerfil || req.usuario.avatar;
+
+    req.usuario.documentoIdentidad =
+      documentoIdentidad || req.usuario.documentoIdentidad;
+
+    req.usuario.credencialIdentificacion =
+      credencialIdentificacion || req.usuario.credencialIdentificacion;
+
+    req.usuario.idiomas =
+      idiomas || req.usuario.idiomas;
+
+    req.usuario.descripcion =
+      descripcion || req.usuario.descripcion;
+
+    req.usuario.experiencia =
+      experiencia || req.usuario.experiencia;
+
+    req.usuario.rutasOfrecidas =
+      rutasOfrecidas || req.usuario.rutasOfrecidas;
+
+    req.usuario.precioPromedio =
+      precioPromedio || req.usuario.precioPromedio;
+
     req.usuario.perfilCompleto = true;
 
     await req.usuario.save();
