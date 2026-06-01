@@ -221,6 +221,63 @@ function CompletarPerfil() {
                 className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 min-h-[120px]"
               />
 
+              <div>
+                <label className="block mb-2 text-zinc-300">
+                  Credencial de identificación
+                </label>
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={async (e) => {
+                    const archivo = e.target.files[0];
+                    if (!archivo) return;
+
+                    const loadingToast = toast.loading("Subiendo credencial...");
+
+                    const url = await subirImagen(archivo);
+
+                    toast.dismiss(loadingToast);
+
+                    if (url) {
+                      setForm({
+                        ...form,
+                        credencialIdentificacion: url
+                      });
+
+                      toast.success("Credencial subida");
+                    }
+                  }}
+                  className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4"
+                />
+
+                {form.credencialIdentificacion && (
+                  <img
+                    src={form.credencialIdentificacion}
+                    alt="Credencial"
+                    className="w-full max-h-56 rounded-2xl object-cover mt-4"
+                  />
+                )}
+              </div>
+
+              <input
+                type="text"
+                name="rutasOfrecidas"
+                placeholder="Rutas ofrecidas separadas por coma"
+                value={form.rutasOfrecidas}
+                onChange={handleChange}
+                className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4"
+              />
+
+              <input
+                type="number"
+                name="precioPromedio"
+                placeholder="Precio promedio"
+                value={form.precioPromedio}
+                onChange={handleChange}
+                className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4"
+              />
+
             </div>
           )}
 
