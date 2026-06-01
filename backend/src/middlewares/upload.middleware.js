@@ -10,6 +10,9 @@ if (!fs.existsSync(uploadDir)) {
   });
 }
 
+console.log("UPLOAD DIR:", uploadDir);
+console.log("EXISTE:", fs.existsSync(uploadDir));
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, uploadDir);

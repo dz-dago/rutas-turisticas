@@ -1,6 +1,7 @@
 const cloudinary = require("../config/cloudinary");
 
 exports.subirImagen = async (req, res) => {
+  console.log("REQ FILE:", req.file);
   try {
 
     if (!req.file) {
