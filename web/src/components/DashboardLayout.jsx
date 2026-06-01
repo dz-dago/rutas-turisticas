@@ -1,10 +1,12 @@
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import logo from "../assets/logo.png";
 
 function DashboardLayout({ children }) {
   const { usuario, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const [menuMovil, setMenuMovil] = useState(false);
 
   const linksPorRol = {
@@ -53,12 +55,26 @@ function DashboardLayout({ children }) {
     admin: "text-orange-400"
   }[usuario?.rol] ?? "text-zinc-400";
 
+  const ocultarRegresar = [
+    "/turista",
+    "/guia",
+    "/propietario",
+    "/admin"
+  ].includes(location.pathname);
+
   const SidebarContent = () => (
     <>
       {/* Logo */}
-      <div>
-        <h1 className="text-2xl font-black text-orange-400">Rutas Turísticas</h1>
-        <p className="text-zinc-500 text-sm mt-1">Huehuetenango</p>
+      <div className="flex items-center gap-3">
+        <img
+          src={logo}
+          alt="Rutas Turísticas"
+          className="w-14 h-14 object-contain"
+        />
+        <div>
+          <h1 className="text-2xl font-black text-orange-400">Rutas Turísticas</h1>
+          <p className="text-zinc-500 text-sm">Huehuetenango</p>
+        </div>
       </div>
 
       {/* Nav */}
@@ -88,9 +104,9 @@ function DashboardLayout({ children }) {
         <div className="flex items-center gap-3">
           <img
             src={
-              usuario?.avatar ||
               usuario?.fotoPerfil ||
-              "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80"
+              usuario?.avatar ||
+              "/default-avatar.png"
             }
             alt={usuario?.nombre || "Usuario"}
             className="w-12 h-12 rounded-full object-cover flex-shrink-0"
@@ -149,6 +165,17 @@ function DashboardLayout({ children }) {
             <aside className="relative z-50 w-72 bg-zinc-900 border-r border-zinc-800 p-6 flex flex-col h-full overflow-y-auto">
               <SidebarContent />
             </aside>
+          </div>
+        )}
+
+        {!ocultarRegresar && (
+          <div className="px-4 md:px-8 pt-4">
+            <button
+              onClick={() => navigate(-1)}
+              className="bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded-xl transition"
+            >
+              ← Regresar
+            </button>
           </div>
         )}
 
