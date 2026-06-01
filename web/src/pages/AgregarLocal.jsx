@@ -175,7 +175,9 @@ function AgregarLocal() {
   return (
     <DashboardLayout>
       <div className="min-h-screen bg-zinc-950 text-white px-5 md:px-8 py-10">
-        <h1 className="text-4xl font-black text-red-500">PRUEBA NUEVA INTERFAZ</h1>
+        <h1 style={{color:"yellow",fontSize:"80px"}}>
+AAAAAAAAAAAAA
+</h1>
         <p className="text-zinc-400 mt-3 max-w-3xl">
           Registra tu local. Se guardará como pendiente y será visible en la plataforma cuando tenga suscripción activa.
         </p>
