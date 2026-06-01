@@ -1,7 +1,7 @@
 const cloudinary = require("../config/cloudinary");
+const streamifier = require("streamifier");
 
 exports.subirImagen = async (req, res) => {
-  console.log("REQ FILE:", req.file);
   try {
 
     if (!req.file) {
@@ -10,10 +10,23 @@ exports.subirImagen = async (req, res) => {
       });
     }
 
-    const resultado = await cloudinary.uploader.upload(
-      req.file.path,
-      {
-        folder: "rutas-turisticas"
+    const resultado = await new Promise(
+      (resolve, reject) => {
+
+        const stream =
+          cloudinary.uploader.upload_stream(
+            {
+              folder: "rutas-turisticas"
+            },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          );
+
+        streamifier
+          .createReadStream(req.file.buffer)
+          .pipe(stream);
       }
     );
 
@@ -24,7 +37,7 @@ exports.subirImagen = async (req, res) => {
 
   } catch (error) {
 
-    console.error("Error Cloudinary:", error);
+    console.error(error);
 
     return res.status(500).json({
       mensaje: "Error al subir imagen"
