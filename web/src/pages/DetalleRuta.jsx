@@ -5,7 +5,6 @@ import { useLocation } from "react-router-dom";
 import DashboardLayout from "../components/DashboardLayout";
 
 import MapaRuta from "../components/MapaRuta";
-import BotonRegresar from "../components/BotonRegresar";
 
 const categoriasMap = {
   CAF: "Cafeterías",
@@ -76,8 +75,6 @@ bg-zinc-950
           max-w-6xl
           mx-auto
         ">
-
-          <BotonRegresar />
 
           <div className="
 bg-zinc-900
