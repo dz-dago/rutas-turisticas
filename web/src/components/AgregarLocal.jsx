@@ -20,7 +20,6 @@ function AgregarLocal() {
   const navigate = useNavigate();
   const [guardando, setGuardando] = useState(false);
   const [subiendo, setSubiendo] = useState(false);
-  // "url" = pegar enlace, "archivo" = subir archivo
   const [modoFoto, setModoFoto] = useState("url");
 
   const [form, setForm] = useState({
@@ -30,15 +29,83 @@ function AgregarLocal() {
     direccion: "",
     lat: "",
     lng: "",
+    linkMaps: "",
     precioPromedio: "",
     foto: "",
     urlFoto: ""
   });
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  // --- Parsear coordenadas desde un link de Google Maps ---
+  const parsearLinkMaps = (link) => {
+    const m1 = link.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (m1) return { lat: parseFloat(m1[1]), lng: parseFloat(m1[2]) };
+
+    const m2 = link.match(/[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (m2) return { lat: parseFloat(m2[1]), lng: parseFloat(m2[2]) };
+
+    const m3 = link.match(/[?&]ll=(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (m3) return { lat: parseFloat(m3[1]), lng: parseFloat(m3[2]) };
+
+    return null;
+  };
+
+  const handleLinkMaps = (e) => {
+    const link = e.target.value;
+    setForm((prev) => ({ ...prev, linkMaps: link }));
+
+    const coords = parsearLinkMaps(link);
+    if (coords) {
+      setForm((prev) => ({
+        ...prev,
+        linkMaps: link,
+        lat: coords.lat,
+        lng: coords.lng
+      }));
+      toast.success(
+        `Coordenadas detectadas: ${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)}`
+      );
+    }
+  };
+
+  // --- GPS del navegador ---
+  const usarUbicacionActual = () => {
+    if (!navigator.geolocation) {
+      toast.error("Tu navegador no permite obtener ubicación");
+      return;
+    }
+    const t = toast.loading("Obteniendo ubicación...");
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        toast.dismiss(t);
+        setForm((prev) => ({
+          ...prev,
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+          linkMaps: ""
+        }));
+        toast.success(
+          `Ubicación detectada: ${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`
+        );
+      },
+      (err) => {
+        toast.dismiss(t);
+        if (err.code === 1) {
+          toast.error("Permiso denegado. Habilita la ubicación en tu navegador.");
+        } else if (err.code === 2) {
+          toast.error("No se pudo detectar la ubicación. Verifica tu GPS.");
+        } else {
+          toast.error("Tiempo agotado. Intenta de nuevo.");
+        }
+      },
+      { timeout: 10000, enableHighAccuracy: true }
+    );
+  };
+
+  // --- Subir imagen por archivo ---
   const subirImagen = async (archivo) => {
     try {
       setSubiendo(true);
@@ -56,34 +123,21 @@ function AgregarLocal() {
     }
   };
 
-  // La foto final es la URL pegada o la subida
   const fotoFinal = modoFoto === "url" ? form.urlFoto : form.foto;
 
-  const usarUbicacionActual = () => {
-    if (!navigator.geolocation) {
-      toast.error("Tu navegador no permite obtener ubicación");
-      return;
-    }
-    const t = toast.loading("Obteniendo ubicación...");
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        toast.dismiss(t);
-        setForm({ ...form, lat: pos.coords.latitude, lng: pos.coords.longitude });
-        toast.success("Ubicación detectada");
-      },
-      () => {
-        toast.dismiss(t);
-        toast.error("No se pudo obtener la ubicación");
-      }
-    );
-  };
-
+  // --- Guardar local ---
   const crearLocal = async (e) => {
     e.preventDefault();
-    if (!fotoFinal) {
-      toast.error("Agrega una foto al local (URL o archivo)");
+
+    if (!form.lat || !form.lng) {
+      toast.error("Debes capturar la ubicación (link de Maps o botón GPS)");
       return;
     }
+    if (!fotoFinal) {
+      toast.error("Agrega una foto al local");
+      return;
+    }
+
     try {
       setGuardando(true);
       const t = toast.loading("Guardando local...");
@@ -163,46 +217,61 @@ function AgregarLocal() {
             className="w-full min-h-[160px] bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 text-white placeholder-zinc-500 focus:outline-none focus:border-orange-500 transition resize-none"
           />
 
-          {/* Dirección */}
+          {/* Dirección de texto */}
           <input
             type="text"
             name="direccion"
-            placeholder="Dirección visible para turistas"
+            placeholder="Dirección visible para turistas (ej: 4a Calle 5-23, Zona 1)"
             value={form.direccion}
             onChange={handleChange}
             required
             className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 text-white placeholder-zinc-500 focus:outline-none focus:border-orange-500 transition"
           />
 
-          {/* Coordenadas */}
-          <div className="grid md:grid-cols-3 gap-4">
+          {/* UBICACIÓN — link de Maps o GPS */}
+          <div>
+            <label className="block text-zinc-300 font-semibold mb-3">
+              Ubicación del local
+            </label>
+
+            {/* Campo link Google Maps */}
             <input
-              type="number"
-              step="any"
-              name="lat"
-              placeholder="Latitud"
-              value={form.lat}
-              onChange={handleChange}
-              required
+              type="text"
+              name="linkMaps"
+              value={form.linkMaps}
+              onChange={handleLinkMaps}
+              placeholder="Pega aquí el link de Google Maps del local"
               className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 text-white placeholder-zinc-500 focus:outline-none focus:border-orange-500 transition"
             />
-            <input
-              type="number"
-              step="any"
-              name="lng"
-              placeholder="Longitud"
-              value={form.lng}
-              onChange={handleChange}
-              required
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 text-white placeholder-zinc-500 focus:outline-none focus:border-orange-500 transition"
-            />
+            <p className="text-zinc-500 text-xs mt-2 mb-4">
+              Abre Google Maps → busca tu local → toca <strong className="text-zinc-400">Compartir</strong> → copia el link y pégalo aquí. Las coordenadas se detectan solas.
+            </p>
+
+            {/* Botón GPS */}
             <button
               type="button"
               onClick={usarUbicacionActual}
-              className="bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-2xl px-5 py-4 font-bold transition"
+              className="w-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-2xl px-5 py-4 font-bold transition flex items-center justify-center gap-2"
             >
-              📍 Usar ubicación actual
+              📍 O usar mi ubicación actual (GPS)
             </button>
+
+            {/* Confirmación de coordenadas */}
+            {form.lat && form.lng ? (
+              <div className="mt-3 bg-green-500/10 border border-green-500/30 rounded-2xl px-5 py-3 flex items-center gap-3">
+                <span className="text-green-400 text-xl">✓</span>
+                <div>
+                  <p className="text-green-400 font-bold text-sm">Coordenadas capturadas correctamente</p>
+                  <p className="text-zinc-400 text-xs mt-0.5">
+                    Lat: {Number(form.lat).toFixed(6)} · Lng: {Number(form.lng).toFixed(6)}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="mt-3 bg-zinc-800/50 border border-zinc-700 rounded-2xl px-5 py-3">
+                <p className="text-zinc-500 text-sm">⚠ Aún no se han capturado coordenadas</p>
+              </div>
+            )}
           </div>
 
           {/* Precio */}
@@ -215,13 +284,13 @@ function AgregarLocal() {
             className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 text-white placeholder-zinc-500 focus:outline-none focus:border-orange-500 transition"
           />
 
-          {/* Foto — selector de modo */}
+          {/* FOTO */}
           <div>
             <label className="block text-zinc-300 font-semibold mb-3">
               Foto del local
             </label>
 
-            {/* Tabs modo */}
+            {/* Tabs */}
             <div className="flex gap-2 mb-4">
               <button
                 type="button"
@@ -251,50 +320,54 @@ function AgregarLocal() {
             {modoFoto === "url" && (
               <div>
                 <input
-                  type="url"
+                  type="text"
                   name="urlFoto"
-                  placeholder="https://ejemplo.com/foto.jpg  —  pega aquí el enlace de la imagen"
+                  placeholder="https://ejemplo.com/foto.jpg — pega aquí el enlace de la imagen"
                   value={form.urlFoto}
                   onChange={handleChange}
                   className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 text-white placeholder-zinc-500 focus:outline-none focus:border-orange-500 transition"
                 />
                 <p className="text-zinc-500 text-xs mt-2">
-                  Puedes usar un enlace de Google Photos, Imgur, Unsplash u otro servicio de imágenes.
+                  Puedes usar un enlace de Google Photos, Imgur u otro servicio de imágenes.
                 </p>
               </div>
             )}
 
             {/* Modo archivo */}
             {modoFoto === "archivo" && (
-              <div>
-                <label className={`flex items-center gap-3 cursor-pointer bg-zinc-800 border border-dashed border-zinc-600 hover:border-orange-500 rounded-2xl px-5 py-4 transition ${subiendo ? "opacity-50 pointer-events-none" : ""}`}>
-                  <span className="text-2xl">📷</span>
-                  <div>
-                    <p className="font-semibold text-white">{subiendo ? "Subiendo imagen..." : "Seleccionar archivo"}</p>
-                    <p className="text-zinc-500 text-xs mt-0.5">JPG, PNG, JPEG · Máx. 5MB</p>
-                  </div>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    disabled={subiendo}
-                    onChange={async (e) => {
-                      const archivo = e.target.files[0];
-                      if (!archivo) return;
-                      const t = toast.loading("Subiendo imagen...");
-                      const url = await subirImagen(archivo);
-                      toast.dismiss(t);
-                      if (url) {
-                        setForm({ ...form, foto: url });
-                        toast.success("Imagen subida");
-                      }
-                    }}
-                  />
-                </label>
-              </div>
+              <label
+                className={`flex items-center gap-4 cursor-pointer bg-zinc-800 border border-dashed border-zinc-600 hover:border-orange-500 rounded-2xl px-5 py-5 transition ${
+                  subiendo ? "opacity-50 pointer-events-none" : ""
+                }`}
+              >
+                <span className="text-3xl">📷</span>
+                <div>
+                  <p className="font-semibold text-white">
+                    {subiendo ? "Subiendo imagen..." : "Seleccionar archivo"}
+                  </p>
+                  <p className="text-zinc-500 text-xs mt-0.5">JPG, PNG, JPEG · Máx. 5MB</p>
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  disabled={subiendo}
+                  onChange={async (e) => {
+                    const archivo = e.target.files[0];
+                    if (!archivo) return;
+                    const t = toast.loading("Subiendo imagen...");
+                    const url = await subirImagen(archivo);
+                    toast.dismiss(t);
+                    if (url) {
+                      setForm((prev) => ({ ...prev, foto: url }));
+                      toast.success("Imagen subida");
+                    }
+                  }}
+                />
+              </label>
             )}
 
-            {/* Preview de la foto */}
+            {/* Preview */}
             {fotoFinal && (
               <div className="mt-4 relative">
                 <img
@@ -303,16 +376,19 @@ function AgregarLocal() {
                   className="w-full h-64 object-cover rounded-2xl border border-zinc-700"
                   onError={(e) => {
                     e.target.style.display = "none";
-                    toast.error("No se pudo cargar la imagen, verifica el enlace");
+                    toast.error("No se pudo cargar la imagen. Verifica el enlace.");
                   }}
                 />
                 <button
                   type="button"
-                  onClick={() => {
-                    if (modoFoto === "url") setForm({ ...form, urlFoto: "" });
-                    else setForm({ ...form, foto: "" });
-                  }}
-                  className="absolute top-3 right-3 bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold transition"
+                  onClick={() =>
+                    setForm((prev) => ({
+                      ...prev,
+                      urlFoto: modoFoto === "url" ? "" : prev.urlFoto,
+                      foto: modoFoto === "archivo" ? "" : prev.foto
+                    }))
+                  }
+                  className="absolute top-3 right-3 bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold transition text-lg"
                 >
                   ×
                 </button>
