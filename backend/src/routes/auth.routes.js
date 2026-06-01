@@ -116,6 +116,7 @@ router.post("/registro", async (req, res) => {
       perfilTipo,
       avatar,
       fotoPerfil,
+      documentoIdentidad,
       credencialIdentificacion,
       idiomas,
       descripcion,
@@ -152,6 +153,8 @@ router.post("/registro", async (req, res) => {
       perfilTipo: rol === "turista" ? perfilTipo || "TUR" : null,
       avatar: fotoPerfil || avatar || "",
       fotoPerfil: fotoPerfil || avatar || "",
+      documentoIdentidad:
+        documentoIdentidad || "",
       provider: "local",
       perfilCompleto: true,
       verificacion: {
