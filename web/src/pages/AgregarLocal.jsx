@@ -28,6 +28,7 @@ function AgregarLocal() {
     direccion: "",
     lat: "",
     lng: "",
+    linkMaps: "",
     precioPromedio: "",
     foto: ""
   });
@@ -62,30 +63,73 @@ function AgregarLocal() {
       toast.error("Tu navegador no permite obtener ubicación");
       return;
     }
-
-    const loadingToast = toast.loading("Obteniendo ubicación...");
-
+    const t = toast.loading("Obteniendo ubicación...");
     navigator.geolocation.getCurrentPosition(
-      (position) => {
-        toast.dismiss(loadingToast);
-
-        setForm({
-          ...form,
-          lat: position.coords.latitude,
-          lng: position.coords.longitude
-        });
-
-        toast.success("Ubicación detectada");
+      (pos) => {
+        toast.dismiss(t);
+        setForm((prev) => ({
+          ...prev,
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+          linkMaps: ""
+        }));
+        toast.success(
+          `Ubicación detectada: ${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}` 
+        );
       },
-      () => {
-        toast.dismiss(loadingToast);
-        toast.error("No se pudo obtener la ubicación");
-      }
+      (err) => {
+        toast.dismiss(t);
+        if (err.code === 1) {
+          toast.error("Permiso denegado. Ve a configuración del navegador y permite la ubicación.");
+        } else if (err.code === 2) {
+          toast.error("No se pudo detectar la ubicación. Verifica tu GPS o conexión.");
+        } else {
+          toast.error("Tiempo agotado. Intenta de nuevo.");
+        }
+      },
+      { timeout: 10000, enableHighAccuracy: true }
     );
+  };
+
+  const parsearLinkMaps = (link) => {
+    // Formato @lat,lng
+    const match1 = link.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (match1) return { lat: parseFloat(match1[1]), lng: parseFloat(match1[2]) };
+
+    // Formato ?q=lat,lng
+    const match2 = link.match(/[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (match2) return { lat: parseFloat(match2[1]), lng: parseFloat(match2[2]) };
+
+    // Formato ll=lat,lng
+    const match3 = link.match(/[?&]ll=(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (match3) return { lat: parseFloat(match3[1]), lng: parseFloat(match3[2]) };
+
+    return null;
+  };
+
+  const handleLinkMaps = (e) => {
+    const link = e.target.value;
+    setForm((prev) => ({ ...prev, linkMaps: link }));
+
+    const coords = parsearLinkMaps(link);
+    if (coords) {
+      setForm((prev) => ({
+        ...prev,
+        linkMaps: link,
+        lat: coords.lat,
+        lng: coords.lng
+      }));
+      toast.success(`Coordenadas detectadas: ${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)}`);
+    }
   };
 
   const crearLocal = async (e) => {
     e.preventDefault();
+
+    if (!form.lat || !form.lng) {
+      toast.error("Debes capturar la ubicación del local (link de Maps o GPS)");
+      return;
+    }
 
     try {
       setGuardando(true);
@@ -185,36 +229,49 @@ function AgregarLocal() {
             className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4"
           />
 
-          <div className="grid md:grid-cols-3 gap-4">
-            <input
-              type="number"
-              step="any"
-              name="lat"
-              placeholder="Latitud"
-              value={form.lat}
-              onChange={handleChange}
-              required
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4"
-            />
+          <div>
+            <label className="block text-zinc-300 font-semibold mb-3">
+              Ubicación del local
+            </label>
 
+            {/* Link de Google Maps */}
             <input
-              type="number"
-              step="any"
-              name="lng"
-              placeholder="Longitud"
-              value={form.lng}
-              onChange={handleChange}
-              required
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4"
+              type="url"
+              name="linkMaps"
+              value={form.linkMaps}
+              onChange={handleLinkMaps}
+              placeholder="Pega aquí el link de Google Maps del local"
+              className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 text-white placeholder-zinc-500 focus:outline-none focus:border-orange-500 transition"
             />
+            <p className="text-zinc-500 text-xs mt-2 mb-4">
+              Abre Google Maps, busca tu local, toca "Compartir" y copia el link. Las coordenadas se detectan automáticamente.
+            </p>
 
+            {/* Botón ubicación actual */}
             <button
               type="button"
               onClick={usarUbicacionActual}
-              className="bg-zinc-800 hover:bg-zinc-700 rounded-2xl px-5 py-4 font-bold transition"
+              className="bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-2xl px-5 py-4 font-bold transition w-full flex items-center justify-center gap-2"
             >
-              Usar ubicación actual
+              📍 O usar mi ubicación actual (GPS)
             </button>
+
+            {/* Confirmación visual de coordenadas */}
+            {form.lat && form.lng ? (
+              <div className="mt-3 bg-green-500/10 border border-green-500/30 rounded-2xl px-5 py-3 flex items-center gap-3">
+                <span className="text-green-400 text-xl">✓</span>
+                <div>
+                  <p className="text-green-400 font-bold text-sm">Coordenadas capturadas</p>
+                  <p className="text-zinc-400 text-xs">
+                    Lat: {Number(form.lat).toFixed(6)} · Lng: {Number(form.lng).toFixed(6)}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="mt-3 bg-zinc-800/50 border border-zinc-700 rounded-2xl px-5 py-3">
+                <p className="text-zinc-500 text-sm">Aún no se han capturado coordenadas</p>
+              </div>
+            )}
           </div>
 
           <input
