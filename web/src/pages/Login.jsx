@@ -11,7 +11,7 @@ function Login() {
   const [loading, setLoading] = useState(false);
 
   const loginGoogle = () => {
-    window.location.href = "http://localhost:3000/api/auth/google";
+    window.location.href = "https://rutas-turisticas-api.onrender.com/api/auth/google";
   };
 
   const loginManual = async (e) => {
