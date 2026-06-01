@@ -301,6 +301,74 @@ function MisLocales() {
 
                   </div>
 
+                  <div className="flex gap-3 mt-6">
+
+                    <button
+                      onClick={() => {
+                        localStorage.setItem(
+                          "localEditar",
+                          JSON.stringify(local)
+                        );
+
+                        window.location.href =
+                          `/propietario/editar-local/${local._id}`;
+                      }}
+                      className="
+                        flex-1
+                        bg-orange-500
+                        hover:bg-orange-600
+                        py-3
+                        rounded-2xl
+                        font-bold
+                        transition
+                      "
+                    >
+                      ✏️ Editar
+                    </button>
+
+                    <button
+                      onClick={async () => {
+
+                        if (
+                          !window.confirm(
+                            `¿Eliminar ${local.nombre}?`
+                          )
+                        ) return;
+
+                        try {
+
+                          await api.delete(
+                            `/locales/${local._id}`
+                          );
+
+                          toast.success(
+                            "Local eliminado"
+                          );
+
+                          cargarLocales();
+
+                        } catch (error) {
+
+                          toast.error(
+                            "Error al eliminar local"
+                          );
+                        }
+                      }}
+                      className="
+                        flex-1
+                        bg-red-600
+                        hover:bg-red-700
+                        py-3
+                        rounded-2xl
+                        font-bold
+                        transition
+                      "
+                    >
+                      🗑 Eliminar
+                    </button>
+
+                  </div>
+
                 </div>
 
               </div>

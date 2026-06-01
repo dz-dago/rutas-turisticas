@@ -20,6 +20,7 @@ import DashboardGuia from "./pages/DashboardGuia";
 import SuscripcionGuia from "./pages/SuscripcionGuia";
 import PanelPropietario from "./pages/PanelPropietario";
 import AgregarLocal from "./pages/AgregarLocal";
+import EditarLocal from "./pages/EditarLocal";
 import MisLocales from "./pages/MisLocales";
 import SuscripcionesLocales from "./pages/SuscripcionesLocales";
 import Landing from "./pages/Landing";
@@ -96,6 +97,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <AgregarLocal />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/propietario/editar-local/:id"
+            element={
+              <ProtectedRoute>
+                <EditarLocal />
               </ProtectedRoute>
             }
           />
