@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../api/api";
 import toast from "react-hot-toast";
+import DashboardLayout from "../components/DashboardLayout";
 
 function GuiasTuristicos() {
   const [guias, setGuias] = useState([]);
@@ -71,7 +72,8 @@ function GuiasTuristicos() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white px-8 py-10">
+    <DashboardLayout>
+      <div className="min-h-screen bg-zinc-950 text-white px-8 py-10">
       <h1 className="text-4xl font-black text-orange-400">
         Guías Turísticos
       </h1>
@@ -222,6 +224,7 @@ function GuiasTuristicos() {
         })}
       </div>
     </div>
+    </DashboardLayout>
   );
 }
 

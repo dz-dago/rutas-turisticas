@@ -1,5 +1,6 @@
 import React from "react";
 import { useAuth } from "../context/AuthContext";
+import DashboardLayout from "../components/DashboardLayout";
 
 function Perfil() {
   const { usuario, logout } = useAuth();
@@ -13,7 +14,8 @@ function Perfil() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white px-8 py-10">
+    <DashboardLayout>
+      <div className="min-h-screen bg-zinc-950 text-white px-8 py-10">
       <h1 className="text-4xl font-black text-orange-400">
         Mi Perfil
       </h1>
@@ -75,6 +77,7 @@ function Perfil() {
         </button>
       </div>
     </div>
+    </DashboardLayout>
   );
 }
 
