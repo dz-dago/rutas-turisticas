@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../api/api";
+import logo from "../assets/logo.png";
 
 function Login() {
   const navigate = useNavigate();
@@ -57,8 +58,19 @@ function Login() {
 
       <div className="relative z-10 min-h-screen grid lg:grid-cols-2">
         <section className="hidden lg:flex flex-col justify-between p-12 border-r border-zinc-800">
-          <Link to="/" className="text-2xl font-black text-orange-400">
-            Rutas Turísticas
+          <Link
+            to="/"
+            className="flex items-center gap-3"
+          >
+            <img
+              src={logo}
+              alt="Logo"
+              className="w-12 h-12 object-contain"
+            />
+
+            <span className="text-2xl font-black text-orange-400">
+              Rutas Turísticas
+            </span>
           </Link>
 
           <div>
@@ -96,17 +108,21 @@ function Login() {
         <section className="flex items-center justify-center px-6 py-12">
           <div className="w-full max-w-md bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] p-8 shadow-2xl">
             <div className="text-center">
-              <Link to="/" className="lg:hidden text-2xl font-black text-orange-400">
-                Rutas Turísticas
-              </Link>
 
-              <h2 className="text-4xl font-black mt-6">
+              <img
+                src={logo}
+                alt="Rutas Turísticas"
+                className="w-32 h-32 object-contain mx-auto mb-4"
+              />
+
+              <h2 className="text-4xl font-black">
                 Iniciar sesión
               </h2>
 
               <p className="text-zinc-400 mt-3">
                 Continúa con tu cuenta para acceder a tu panel turístico.
               </p>
+
             </div>
 
             <form onSubmit={loginManual} className="space-y-5 mt-8">
