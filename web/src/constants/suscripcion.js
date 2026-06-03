@@ -1,1 +1,1 @@
-export const PRECIO_SUSCRIPCION = 155;
+export const PRECIO_SUSCRIPCION = 150;
